@@ -5,9 +5,10 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by(email: params[:session][:email].downcase)
     if user && user.authenticate(params[:session][:password])
+      forward = session[:forwarding_url]
       reset_session
       log_in user
-      redirect_to user
+      redirect_to forward || user
     else
       flash.now[:danger] = 'Invalid email/password combination' # Not quite right!
       render 'new', status: :unprocessable_entity
